@@ -2,6 +2,6 @@
 
 int			main()
 {
-	ft_malloc();
+	malloc();
 	return (0);
 }
