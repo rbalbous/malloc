@@ -27,7 +27,7 @@ $(LIB)	:
 			make -j -C $(LIB_PATH)
 
 $(NAME) :	$(LIB) $(SRCS_OBJ)
-			ln -fs $(NAME) $(HOST)
+			ln -fs $(HOST) $(NAME)
 			$(CC) -shared $^ -o $(NAME)
 
 

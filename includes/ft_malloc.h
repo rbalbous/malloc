@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/12 01:41:50 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/12 21:10:00 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,44 @@
 /*
 **size allocated by the mmap
 */
-# define MEM_SIZE 10000000
 
-typedef struct s_block	t_block;
-typedef struct s_page	t_page;
+# define TINY 128
+# define SMALL 4096
+
+typedef struct s_block			t_block;
+typedef struct s_page			t_page;
+typedef struct s_malloc_pages	t_malloc_pages;
+extern t_malloc_pages			g_malloc_pages;
 
 struct s_page
 {
-	t_block *block;
-	t_block *free;
 	t_page	*next;
 	t_page	*prev;
+	t_block *current;
 };
-
 
 struct		s_block
 {
 	size_t	size;
 	int		free;
 	t_block	*next;
-	t_block *prev;
+	t_block	*prev;
 };
 
-void		*ft_malloc(size_t size);
+struct		s_malloc_pages
+{
+	t_page				*tiny;
+	t_page				*small;
+	t_block				*large;
+};
+
+enum e_type
+{
+	tiny,
+	small,
+	large
+};
+
+void		*malloc(size_t size);
 
 #endif
