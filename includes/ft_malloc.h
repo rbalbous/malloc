@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/12 21:10:00 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/13 20:02:43 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct s_page
 {
 	t_page	*next;
 	t_page	*prev;
-	t_block *current;
+	t_block *block;
 };
 
 struct		s_block

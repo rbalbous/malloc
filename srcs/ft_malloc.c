@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/12 21:34:07 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/13 22:19:03 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,22 @@
 
 t_malloc_pages	g_malloc_pages = {NULL, NULL, NULL};
 
-void		*malloc_tiny_small(size_t size, t_page **page)
+void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 {
+	t_page		*new;
+	t_block		*block;
 
+	new = *page;
+	if (new == NULL)
+	{
+		new = mmap(NULL, type_size * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		new->prev = NULL;
+		
+		block = new + sizeof(t_page);
+		block->size = 
+	}
+	
+	
 }
 
 void		*malloc_large(size_t size, t_page **page)
@@ -34,9 +47,9 @@ void		*malloc(size_t size)
 	if (!size)
 		return (NULL);
 	if (type == tiny)
-		return (malloc_tiny_small(size, g_malloc_pages.tiny));
+		return (malloc_tiny_small(size, TINY, g_malloc_pages.tiny));
 	if (type == small)
-		return (malloc_tiny_small(size, g_malloc_pages.small));
+		return (malloc_tiny_small(size, SMALL, g_malloc_pages.small));
 	if (type == large)
 	ft_printf("ok\n");
 	return (NULL);
