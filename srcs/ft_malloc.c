@@ -6,17 +6,17 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/12 21:34:07 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/15 01:46:19 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
-t_malloc_pages	g_malloc_pages = {NULL, NULL, NULL};
+t_malloc_pages	g_malloc_pages = {NULL, NULL, NULL, NULL};
 
 void		*malloc_tiny_small(size_t size, t_page **page)
 {
-
+	if (!g_malloc_pages)
 }
 
 void		*malloc_large(size_t size, t_page **page)

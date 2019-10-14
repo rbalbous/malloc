@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/12 21:10:00 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/15 01:45:54 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ struct		s_block
 
 struct		s_malloc_pages
 {
+	t_page				*info;
 	t_page				*tiny;
 	t_page				*small;
 	t_block				*large;
