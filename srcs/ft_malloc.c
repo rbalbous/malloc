@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/13 22:19:03 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/17 20:48:11 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,10 @@ void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 	new = *page;
 	if (new == NULL)
 	{
-		new = mmap(NULL, type_size * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-		new->prev = NULL;
-		
+		new = mmap(NULL, type_size * 100 + sizeof(t_page), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		new->prev = *page;
+		new->next = NULL;
+
 		block = new + sizeof(t_page);
 		block->size = 
 	}
