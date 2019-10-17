@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/13 20:02:43 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/17 20:48:52 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,14 @@ struct		s_block
 {
 	size_t	size;
 	int		free;
-	t_block	*next;
+	int		nb;
 	t_block	*prev;
+	t_block	*next;
 };
 
 struct		s_malloc_pages
 {
+	t_page				*info;
 	t_page				*tiny;
 	t_page				*small;
 	t_block				*large;
