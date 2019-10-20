@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/17 22:57:05 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/20 19:55:00 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,42 @@
 
 t_malloc_pages	g_malloc_pages = {NULL, NULL, NULL, NULL};
 
-void		init_page_info(t_page **info, t_page **page, size_t size, size_t type_size)
+void		*init_page(t_page **page, size_t type_size)
 {
-	t_page		*new;
+	t_page *new;
 
 	new = mmap(NULL, type_size * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	new->prev = NULL;
-	if (*info = NULL)
-		new->next = NULL;
+	new->next = NULL;
+	if (*page == NULL)
+		new->prev = NULL;
 	else
-		new->next = *info;
+	{
+		new->prev = *page;
+		(*page)->next = new;
+	}
+	return (*page + sizeof(t_page));
+}
+
+void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_size)
+{
+	t_page		*new;
+	t_block		*create;
+
+	new = mmap(NULL, type_size * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	new->next = NULL;
+	if (*info == NULL)
+		new->prev = NULL;
+	else
+	{
+		new->prev = *info;
+		(*info)->next = new;
+	}
 	*info = new;
-	*info += sizeof(t_page);
-	*info = size;
-	*info += sizeof(size_t);
-	*info = 0;
+	create = (t_block*)*info;
+	*info + sizeof(t_page) = size;
+	*(*info + sizeof(t_page) + sizeof(size_t)) = 0;
+	if (!(*page))
+		return(init_page(page, type_size));
 }
 
 void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
@@ -38,7 +59,7 @@ void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 
 	if (!(g_malloc_pages.info))
 		return (init_page_info(&g_malloc_pages.info, page, size, type_size));
-	block = g_malloc_pages.info + sizeof(t_page);
+	// block = g_malloc_pages.info + sizeof(t_page);
 	// while (*info->block->next != NULL)
 	// {
 	// 	if  (*info->free && *info->size > size)
