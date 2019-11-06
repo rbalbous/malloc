@@ -6,13 +6,14 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/22 17:04:35 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/10/31 14:07:47 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
 t_malloc_pages	g_malloc_pages = {NULL, NULL, NULL, NULL};
+int		g_type_size;
 
 void		*init_page(t_page **page, size_t type_size)
 {
@@ -30,17 +31,37 @@ void		*init_page(t_page **page, size_t type_size)
 	return (*page + sizeof(t_page));
 }
 
-void		*add_block(t_page **info, t_page **page, t_block *block)
+void		insert_block(t_block *parser, t_block *block, t_page **page)
 {
-	t_page	**temp;
-	int		ret;
+	int		add_diff;
+	int		page_size;
 
-	while ( != NULL)
+	add_diff = 0;
+	page_size = getpagesize();
+	while (*page != NULL)
 	{
-		temp = (*page)->prev;
-		if (ret = find_space(info, temp, block, NULL) == 1)
-			return (block->address);
-		
+		if ((add_diff = (parser->address - (void*)*page)) < page_size)
+		{
+			if (page_size - add_diff + parser->size + 1 < block->size)
+			{
+				block->address = parser->address + parser->size + 1;
+				return ;
+			}
+			else
+			{
+				block->address = init_page(page, g_type_size);
+				return ;
+			}
+		}
+		if ((*page)->prev != NULL)
+		{
+			*page = (*page)->prev;
+		}
+		else
+		{
+			block->address = init_page(page, g_type_size);
+			return ;
+		}
 	}
 }
 
@@ -55,7 +76,7 @@ int			find_space(t_page **info, t_page **page, t_block *block, t_block *parser)
 	count = 0;
 	if (!parser)
 		parser = (t_block*)(*info + sizeof(t_page));
-	while (parser->size > tot_size - size_index)
+	while (parser != NULL)
 	{
 		if (parser->free == 1 && parser->size <= block->size)
 		{
@@ -69,6 +90,9 @@ int			find_space(t_page **info, t_page **page, t_block *block, t_block *parser)
 		}
 		*parser = *(parser + sizeof(t_block));
 	}
+	*parser = *block;
+	insert_block(parser - sizeof(t_block), block, page);
+	return (0);
 }
 
 void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_size)
@@ -91,10 +115,40 @@ void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_siz
 	block->size = size;
 	block->free = 0;
 	if (!(*page))
-		return(block->address = init_page(page, type_size));
+		return (block->address = init_page(page, type_size));
 	else
+	{
 		if (((*page)->prev) != NULL)
-			add_block(info, page, block);
+			return (add_block(info, page, block, g_type_size));
+		else
+			return (block->address = init_page(page, type_size));
+	}
+}
+
+void		*add_block(t_page **info, t_page **page, t_block *block, size_t type_size)
+{
+	int		ret;
+
+	while (*info != NULL)
+	{
+		if ((ret = find_space(info, page, block, NULL)) == 1 || ret == 0)
+			return (block->address);
+		else
+		{
+			if ((*info)->prev == NULL)
+			{
+				while ((*info)->next != NULL)
+					*info = (*info)->next;
+				return (init_page_info(info, page, block->size, type_size));
+			}
+			else
+			{
+				*info = (*info)->prev;
+				continue ;
+			}
+		}
+	}
+	return (init_page_info(info, page, block->size, type_size));
 }
 
 void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
@@ -138,15 +192,15 @@ void		*malloc_large(size_t size, t_page **page)
 
 void		*malloc(size_t size)
 {
-	const t_uint8	type = (size > TINY) + (size > SMALL);
+	int		g_type_size = (size > TINY) + (size > SMALL);
 
 	if (!size)
 		return (NULL);
-	if (type == tiny)
+	if (g_type_size == tiny)
 		return (malloc_tiny_small(size, TINY, &g_malloc_pages.tiny));
-	// if (type == small)
+	// if (g_type_size == small)
 		// return (malloc_tiny_small(size, SMALL, g_malloc_pages.small));
-	// if (type == large)
+	// if (g_type_size == large)
 	ft_printf("ok\n");
 	return (NULL);
 }
