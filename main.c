@@ -14,7 +14,7 @@ int			main()
 	str2 = (char*)ft_malloc(50);
 
 	while (i < 1000)
-	{	
+	{
 		str1[i] = '1';
 		i++;
  	}
