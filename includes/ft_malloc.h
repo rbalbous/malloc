@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/31 14:04:30 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/11/08 15:52:31 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ enum e_type
 	large
 };
 
-void		*malloc(size_t size);
+void		*ft_malloc(size_t size);
 void		*add_block(t_page **info, t_page **page, t_block *block, size_t type_size);
 
 #endif

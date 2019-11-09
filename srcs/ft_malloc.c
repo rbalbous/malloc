@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/10/31 14:07:47 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/11/08 20:13:07 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,18 @@ void		insert_block(t_block *parser, t_block *block, t_page **page)
 	page_size = getpagesize();
 	while (*page != NULL)
 	{
-		if ((add_diff = (parser->address - (void*)*page)) < page_size)
+		add_diff = parser->address - (void*)*page;
+		if (add_diff < page_size)
 		{
 			if (page_size - add_diff + parser->size + 1 < block->size)
 			{
 				block->address = parser->address + parser->size + 1;
-				return ;
 			}
 			else
 			{
 				block->address = init_page(page, g_type_size);
-				return ;
 			}
+			return ;
 		}
 		if ((*page)->prev != NULL)
 		{
@@ -65,7 +65,7 @@ void		insert_block(t_block *parser, t_block *block, t_page **page)
 	}
 }
 
-int			find_space(t_page **info, t_page **page, t_block *block, t_block *parser)
+int			find_space(t_page **info, t_page **page, size_t size, t_block *parser)
 {
 	int			tot_size;
 	int			size_index;
@@ -95,11 +95,11 @@ int			find_space(t_page **info, t_page **page, t_block *block, t_block *parser)
 	return (0);
 }
 
-void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_size)
+void		init_page_info(t_page **info, t_page **page, size_t size, size_t type_size)
 {
 	t_page		*new;
-	t_block		*block;
 
+	ft_printf("init\n");
 	new = mmap(NULL, type_size * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	new->next = NULL;
 	if (*info == NULL)
@@ -111,9 +111,8 @@ void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_siz
 	}
 	*info = new;
 	*info += sizeof(t_page);
-	block = (t_block*)*info;
-	block->size = size;
-	block->free = 0;
+}
+
 	if (!(*page))
 		return (block->address = init_page(page, type_size));
 	else
@@ -125,10 +124,12 @@ void		*init_page_info(t_page **info, t_page **page, size_t size, size_t type_siz
 	}
 }
 
-void		*add_block(t_page **info, t_page **page, t_block *block, size_t type_size)
+void		*add_block(t_page **info, t_page **page, size_t type_size)
 {
 	int		ret;
+	t_block		*block;
 
+	ft_printf("add_block\n");
 	while (*info != NULL)
 	{
 		if ((ret = find_space(info, page, block, NULL)) == 1 || ret == 0)
@@ -153,11 +154,10 @@ void		*add_block(t_page **info, t_page **page, t_block *block, size_t type_size)
 
 void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 {
-
+	ft_printf("mts\n");
 	if (!(g_malloc_pages.info))
-		return (init_page_info(&g_malloc_pages.info, page, size, type_size));
-	else
-		return (NULL);
+		init_page_info(&g_malloc_pages.info, page, size, type_size);
+	return (add_block(&g_malloc_pages.info, page, type_size));
 	// block = g_malloc_pages.info + sizeof(t_page);
 	// while (*info->block->next != NULL)
 	// {
@@ -186,21 +186,27 @@ void		*malloc_large(size_t size, t_page **page)
 	t_block *block;
 	(void)page;
 
+	ft_printf("mlarge\n");
 	block = mmap(NULL, (size + sizeof(t_block)) * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	return (NULL);
 }
 
-void		*malloc(size_t size)
+void		*ft_malloc(size_t size)
 {
 	int		g_type_size = (size > TINY) + (size > SMALL);
 
-	if (!size)
-		return (NULL);
+	ft_printf("type size : %d\n", g_type_size);
 	if (g_type_size == tiny)
+	{
+		ft_printf("ca passe dans tiny\n");
 		return (malloc_tiny_small(size, TINY, &g_malloc_pages.tiny));
-	// if (g_type_size == small)
-		// return (malloc_tiny_small(size, SMALL, g_malloc_pages.small));
-	// if (g_type_size == large)
+	}
+	else if (g_type_size == small)
+	{
+		ft_printf("ca passe dans small\n");
+		return (malloc_tiny_small(size, SMALL, &g_malloc_pages.small));
+	}
+	else if (g_type_size == large)
 	ft_printf("ok\n");
 	return (NULL);
 }
