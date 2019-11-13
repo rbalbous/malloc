@@ -13,12 +13,12 @@ int			main()
 	ft_printf("malloc 1 done\n");
 	str2 = (char*)ft_malloc(50);
 
-	while (i < 1000)
-	{
-		str1[i] = '1';
-		i++;
- 	}
-	i = 0;
+	// while (i < 20)
+	// {
+	// 	str1[i] = '1';
+	// 	i++;
+ 	// }
+	// i = 0;
 	/*while (i < 1000)
 	{
 		str2[i] = '2';
