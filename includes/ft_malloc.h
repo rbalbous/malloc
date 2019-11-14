@@ -6,7 +6,11 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2019/11/14 16:00:29 by rbalbous         ###   ########.fr       */
+=======
+/*   Updated: 2019/11/13 21:48:45 by rbalbous         ###   ########.fr       */
+>>>>>>> b28dda86830caa1c9607f087776a55d030da64f9
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +26,8 @@
 
 # define TINY 32
 # define SMALL 1048
+# define TYPE_SIZE(size) (size > TINY) + (size > SMALL)
+
 
 typedef struct s_block			t_block;
 typedef struct s_page			t_page;
