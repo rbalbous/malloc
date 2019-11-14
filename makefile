@@ -12,7 +12,8 @@ INCLUDES = includes
 
 OBJ_PATH = obj
 
-SRCS =	ft_malloc.c
+SRCS =	ft_malloc.c \
+		free.c
 SRCS_PATH = srcs/
 SRCS_OBJ = $(addprefix $(OBJ_PATH)/, $(SRCS:.c=.o))
 
