@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/21 18:01:19 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/11/24 17:52:39 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void		*add_or_init(t_page **page, t_block *block, size_t size, int *count)
 		// ft_printf("address size %d\n", tmp->address + tmp->size);
 		diff = (tmp->address + tmp->size) - (void*)temp_page;
 		// ft_printf("%d\n", diff);
-		if (diff > 0 && diff < type_size * 128)
+		if (diff > 0 && diff < type_size * 13)
 		{
 			ft_printf("ADD\n\n");
 			return (tmp->address + tmp->size);
