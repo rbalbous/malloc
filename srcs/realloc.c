@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   realloc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/14 15:50:53 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/22 15:21:56 by rbalbous         ###   ########.fr       */
+/*   Created: 2019/11/21 18:01:59 by rbalbous          #+#    #+#             */
+/*   Updated: 2019/11/22 18:40:43 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 
-void		free(void	*ptr)
+void		*realloc(void *ptr, size_t size)
 {
 	int		count;
 	t_page	*info;
 	t_block	*parser;
 
 	info = g_malloc_pages.info;
-	if (ptr == NULL || info == NULL)
-		return ;
+	if (ptr == NULL || info == NULL || size == 0)
+		return (NULL);
 	while (info)
 	{
 		parser = (t_block*)(info + 16);
@@ -32,7 +32,7 @@ void		free(void	*ptr)
 			if (ptr == parser->address)
 			{
 				ft_printf("ca doit passer la\n");
-				parser->free = 1;
+				check_alloc(info, );
 				return ;
 			}
 			parser += 24;

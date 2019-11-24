@@ -8,7 +8,22 @@ int			main()
 	char *str1;
 	char *str2;
 	int i = 0;
+	int j = 0;
 
+	while (i < 130)
+	{
+		j = 0;
+		str1 = (char*)ft_malloc(21);
+		while (j < 20)
+		{
+			str1[j] = '1';
+			j++;
+		}
+		ft_printf("%s\n", str1);
+		i++;
+	}
+	i = 0;
+	free(str1);
 	str1 = (char*)ft_malloc(21);
 	ft_printf("malloc 1 done\n");
 	str2 = (char*)ft_malloc(50);

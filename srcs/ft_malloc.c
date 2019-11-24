@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/14 00:09:58 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/11/21 18:01:19 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,49 +19,88 @@ void		*init_page(t_page **page, size_t size)
 	t_page	*new;
 	int		type_size;
 
+	ft_printf("INIT PAGE\n\n");
 	type_size = 32 + 1016 * (TYPE_SIZE(size) > 0);
-	ft_printf("type_size %d\n", type_size);
 	new = mmap(NULL, type_size * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	ft_printf("page inited 1\n");
 	new->next = NULL;
-	ft_printf("page inited 2\n");
 	new->prev = *page;
-	ft_printf("page inited 3\n");
 	if (*page)
 		(*page)->next = new;
-	ft_printf("page inited 4\n");
 	*page = new;
-	ft_printf("page inited 5\n");
-	return (*page + sizeof(t_page));
+	return (*page + 16);
+}
+
+void		*add_or_init(t_page **page, t_block *block, size_t size, int *count)
+{
+	t_block *tmp;
+	int		diff;
+	int		type_size;
+	t_page	*temp_page;
+
+	temp_page = *page;
+	// ft_printf("ca rentre la ?\n");
+	type_size = 32 + 1016 * (TYPE_SIZE(size) > 0);
+	// ft_printf("count : %d\n", *count);
+	if (*count == 1)
+	{
+		// ft_printf("ca devrait etre la\n");
+		return (init_page(page, size));
+	}
+	tmp = block - 24;
+	// ft_printf("address block = %d\n", block);
+	// ft_printf("block_size %d\n", block->size);
+	// ft_printf("block_free %d\n", block->free);
+	// ft_printf("block_address %d\n", block->address);
+	// ft_printf("address tmp = %d\n", tmp);
+	// ft_printf("address %d\n", tmp->address);
+	while (temp_page != NULL)
+	{
+		// ft_printf("boucle\n");
+		// ft_printf("address %d\n", tmp->address);
+		// ft_printf("address size %d\n", tmp->address + tmp->size);
+		diff = (tmp->address + tmp->size) - (void*)temp_page;
+		// ft_printf("%d\n", diff);
+		if (diff > 0 && diff < type_size * 128)
+		{
+			ft_printf("ADD\n\n");
+			return (tmp->address + tmp->size);
+		}
+		temp_page = temp_page->prev;
+	}
+	return (init_page(page, size));
 }
 
 void		*find_space(t_page **info, t_page **page, size_t size, int *count)
 {
-	int			tot_size;
 	t_block		*parser;
 
-	tot_size = getpagesize();
-	parser = (t_block*)(*info + sizeof(t_page));
+	// ft_printf("info address : %d\n", *info);
+	parser = (t_block*)(*info + 16);
+	// ft_printf("parser %d\n", parser);
 	while (parser->address != NULL)
 	{
+		// ft_printf("parser boucle 1 %d\n", parser);
+		// ft_printf("parser address 1 %d\n", parser->address);
 		if (parser->free == 1 && parser->size <= size)
 		{
 			parser->size = size;
 			parser->free = 0;
 			return (parser->address);
 		}
-		if (*count > 127)
+		// ft_printf("count : %d\n", *count);
+		if (*count > 13)
 		{ 
-			ft_printf("ptdr\n");
+			// ft_printf("count\n");
 			return (NULL);
 		}
-		*parser = *(parser + sizeof(t_block));
+		parser = parser + 24;
+		// ft_printf("parser boucle 2 %d\n", parser);
 		(*count)++;
 	}
-	ft_printf("parser address null\n");
+	// ft_printf("parser 2 %d\n", parser);
 	parser->size = size;
 	parser->free = 0;
-	return (parser->address = init_page(page, size));
+	return (parser->address = add_or_init(page, parser, size, count));
 }
 
 void		init_page_info(t_page **info, size_t type_size)
@@ -76,6 +115,7 @@ void		init_page_info(t_page **info, size_t type_size)
 	if (*info)
 		(*info)->next = new;
 	*info = new;
+	ft_printf("info address : %d\n", *info);
 }
 
 void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size)
@@ -96,6 +136,7 @@ void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size)
 				while ((*info)->next != NULL)
 					*info = (*info)->next;
 				init_page_info(info, type_size);
+				count = 1;
 				return (find_space(info, page, size, &count));
 			}
 			else
@@ -114,27 +155,6 @@ void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 	if (!(g_malloc_pages.info))
 		init_page_info(&g_malloc_pages.info, type_size);
 	return (add_block(&g_malloc_pages.info, page, type_size, size));
-	// block = g_malloc_pages.info + sizeof(t_page);
-	// while (*info->block->next != NULL)
-	// {
-	// 	if  (*info->free && *info->size > size)
-	// 		block_reclaim()
-	// 	if (*info->block->nb == 31)
-	// 		return (init_page_info(info, size));
-		
-		
-	// }
-	
-	// if (new == NULL)
-	// {
-	// 	new = mmap(NULL, type_size * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	// 	new->prev = NULL;
-		
-	// 	block = new + sizeof(t_page);
-	// 	block->size = 
-	// }
-	
-	
 }
 
 void		*malloc_large(size_t size, t_page **page)
@@ -143,7 +163,7 @@ void		*malloc_large(size_t size, t_page **page)
 	(void)page;
 
 	ft_printf("mlarge\n");
-	block = mmap(NULL, (size + sizeof(t_block)) * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	block = mmap(NULL, (size + 24) * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	return (NULL);
 }
 
