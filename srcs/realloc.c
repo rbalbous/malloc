@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/21 18:01:59 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/24 18:19:08 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/11/25 22:06:42 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void		*check_alloc(t_page *info, t_block *parser, size_t size)
 		diff = (tmp->address + tmp->size) - (void*)page;
 		if (diff > 0 && diff < type_size * 13 && diff > size)
 		{
+			
 			return (tmp->address + tmp->size);
 		}
 		temp_page = temp_page->prev;
