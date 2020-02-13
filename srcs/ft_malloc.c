@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 21:55:34 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/24 17:52:39 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/12/03 14:36:44 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void		*init_page(t_page **page, size_t size)
 	t_page	*new;
 	int		type_size;
 
-	ft_printf("INIT PAGE\n\n");
+	// ft_printf("INIT PAGE\n\n");
 	type_size = 32 + 1016 * (TYPE_SIZE(size) > 0);
 	new = mmap(NULL, type_size * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	new->next = NULL;
@@ -62,7 +62,7 @@ void		*add_or_init(t_page **page, t_block *block, size_t size, int *count)
 		// ft_printf("%d\n", diff);
 		if (diff > 0 && diff < type_size * 13)
 		{
-			ft_printf("ADD\n\n");
+			// ft_printf("ADD\n\n");
 			return (tmp->address + tmp->size);
 		}
 		temp_page = temp_page->prev;
@@ -108,14 +108,14 @@ void		init_page_info(t_page **info, size_t type_size)
 	t_page		*new;
 
 	(void)type_size;
-	ft_printf("init\n");
+	// ft_printf("init\n");
 	new = mmap(NULL, 16 + 32 * 128, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	new->next = NULL;
 	new->prev = *info;
 	if (*info)
 		(*info)->next = new;
 	*info = new;
-	ft_printf("info address : %d\n", *info);
+	// ft_printf("info address : %d\n", *info);
 }
 
 void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size)
@@ -123,7 +123,7 @@ void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size)
 	void		*ret;
 	int			count;
 
-	ft_printf("add_block\n");
+	// ft_printf("add_block\n");
 	while (*info != NULL)
 	{
 		count = 1;
@@ -151,20 +151,42 @@ void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size)
 
 void		*malloc_tiny_small(size_t size, size_t type_size, t_page **page)
 {
-	ft_printf("mts %d\n", type_size);
+	// ft_printf("mts %d\n", type_size);
 	if (!(g_malloc_pages.info))
 		init_page_info(&g_malloc_pages.info, type_size);
 	return (add_block(&g_malloc_pages.info, page, type_size, size));
 }
 
-void		*malloc_large(size_t size, t_page **page)
+void		*malloc_large(size_t size, t_block **block)
 {
-	t_block *block;
-	(void)page;
+	t_block *current;
+	t_block *temp;
 
 	ft_printf("mlarge\n");
-	block = mmap(NULL, (size + 24) * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	return (NULL);
+	temp = *block;
+	while (temp != NULL)
+	{
+		if (temp->free == 1 && temp->size <= size)
+		{
+			temp->free = 0;
+			temp->size = size;
+			return (temp->address);
+		}
+		temp = temp->address;
+	}
+	current = mmap(NULL, (size + 24) * 100, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	current->size = size;
+	current->free = 0;
+	if (!(*block))
+	{
+		current->address = NULL;
+	}
+	else
+	{
+		current->address = *block;
+	}
+	*block = current;
+	return (*block + 24);
 }
 
 void		*ft_malloc(size_t size)
@@ -174,18 +196,18 @@ void		*ft_malloc(size_t size)
 	type_size = TYPE_SIZE(size);
 	if (type_size == tiny)
 	{
-		ft_printf("ca passe dans tiny\n");
+		// ft_printf("ca passe dans tiny\n");
 		return (malloc_tiny_small(size, TINY, &(g_malloc_pages.tiny)));
 	}
 	else if (type_size == small) 
 	{
      	
-		ft_printf("ca passe dans small\n");
+		// ft_printf("ca passe dans small\n");
 		return (malloc_tiny_small(size, SMALL, &(g_malloc_pages.small)));
 	}
 	else if (type_size == large)
 	{
-		return (NULL); //to do
+		return (malloc_large(size, &(g_malloc_pages.large)));
 	}
 	ft_printf("ok\n");
 	return (NULL);

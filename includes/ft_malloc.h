@@ -6,7 +6,7 @@
 /*   By: rbalbous <rbalbous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 23:45:19 by rbalbous          #+#    #+#             */
-/*   Updated: 2019/11/24 16:42:31 by rbalbous         ###   ########.fr       */
+/*   Updated: 2019/12/02 15:54:08 by rbalbous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,8 @@ enum e_type
 void		*ft_malloc(size_t size);
 void		free(void	*ptr);
 void		*add_block(t_page **info, t_page **page, size_t type_size, size_t size);
+void		*init_page(t_page **page, size_t size);
+void		init_page_info(t_page **info, size_t type_size);
+void		show_alloc_mem();
 
 #endif
